@@ -161,7 +161,7 @@ private:
   void fillStaticTables();
 
   bool paramExists(std::string param);
-  std::string indentAndInsertAsterisks(const std::string &doc);
+  std::string indentAndInsertSlashes(const std::string &doc);
 
   void addError(int warningType, const std::string &message);
 };

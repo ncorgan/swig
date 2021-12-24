@@ -709,13 +709,12 @@ int CSDocConverter::shiftEndlinesUpTree(DoxygenEntity &root, int level) {
 }
 
 /**
- * This makes sure that all comment lines contain '*'. It is not mandatory in doxygen,
- * but highly recommended for csdoc. '*' in empty lines are indented according
- * to indentation of the first line. Indentation of non-empty lines is not
- * changed - garbage in garbage out.
+ * This makes sure that all comment lines contain '///'. It is unlikely in doxygen,
+ * but necessary for csdoc. '*' in empty lines are indented according to
+ * indentation of the first line. Indentation of non-empty lines is not changed -
+ * garbage in garbage out.
  */
-std::string CSDocConverter::indentAndInsertAsterisks(const string &doc) {
-
+string CSDocConverter::indentAndInsertSlashes(const std::string &doc) {
   size_t idx = doc.find('\n');
   size_t indent = 0;
   bool singleLineComment = idx == string::npos;
@@ -737,7 +736,7 @@ std::string CSDocConverter::indentAndInsertAsterisks(const string &doc) {
   }
   // Create the first line of csdoc comment.
   string indentStr(indent - 1, ' ');
-  string translatedStr = indentStr + "/**";
+  string translatedStr = indentStr + "///";
   if (indent > 1) {
     // remove the first space, so that '*' will be aligned
     translatedStr = translatedStr.substr(1);
@@ -745,7 +744,7 @@ std::string CSDocConverter::indentAndInsertAsterisks(const string &doc) {
 
   translatedStr += doc;
 
-  // insert '*' before each comment line, if it does not have it
+  // insert '///' before each comment line, if it does not have it
   idx = translatedStr.find('\n');
 
   while (idx != string::npos) {
@@ -755,11 +754,11 @@ std::string CSDocConverter::indentAndInsertAsterisks(const string &doc) {
       // line without '*' found - is it empty?
       if (translatedStr[nonspaceIdx] != '\n') {
         // add '* ' to each line without it
-        translatedStr = translatedStr.substr(0, nonspaceIdx) + "* " + translatedStr.substr(nonspaceIdx);
+        translatedStr = translatedStr.substr(0, nonspaceIdx) + "/// " + translatedStr.substr(nonspaceIdx);
         //printf(translatedStr.c_str());
       } else {
         // we found empty line, replace it with indented '*'
-        translatedStr = translatedStr.substr(0, idx + 1) + indentStr + "* " + translatedStr.substr(nonspaceIdx);
+        translatedStr = translatedStr.substr(0, idx + 1) + indentStr + "/// " + translatedStr.substr(nonspaceIdx);
       }
     }
     idx = translatedStr.find('\n', nonspaceIdx);
@@ -776,7 +775,6 @@ std::string CSDocConverter::indentAndInsertAsterisks(const string &doc) {
       translatedStr = translatedStr.substr(0, nonspaceEndIdx + 1);
     }
   }
-  translatedStr += indentStr + "*/\n";
 
   return translatedStr;
 }
@@ -793,7 +791,7 @@ String *CSDocConverter::makeDocumentation(Node *node) {
 
     string doc = Char(documentation);
 
-    string translatedStr = indentAndInsertAsterisks(doc);
+    string translatedStr = indentAndInsertSlashes(doc);
 
     return NewString(translatedStr.c_str());
   }
@@ -810,7 +808,7 @@ String *CSDocConverter::makeDocumentation(Node *node) {
   // (currently just to handle params)
   currentNode = node;
 
-  std::string csdocString = "/**\n * ";
+  std::string csdocString = "///\n/// ";
 
   DoxygenEntity root("root", entityList);
 
@@ -830,7 +828,7 @@ String *CSDocConverter::makeDocumentation(Node *node) {
 
   csdocString += translateSubtree(root);
 
-  csdocString += "\n */\n";
+  csdocString += "\n///\n";
 
   if (m_flags & debug_translator) {
     std::cout << "\n---RESULT IN csdoc---" << std::endl;
