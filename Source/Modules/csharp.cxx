@@ -15,6 +15,7 @@
 #include "cparse.h"
 #include <limits.h>		// for INT_MAX
 #include <ctype.h>
+#include "csdoc.h"
 
 /* Hash type used for upcalls from C/C++ */
 typedef DOH UpcallData;

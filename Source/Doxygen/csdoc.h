@@ -11,8 +11,8 @@
  * Module to return documentation for nodes formatted for CSDoc
  * ----------------------------------------------------------------------------- */
 
-#ifndef csdocCONVERTER_H_
-#define csdocCONVERTER_H_
+#ifndef CSDOCCONVERTER_H_
+#define CSDOCCONVERTER_H_
 
 #include "doxytranslator.h"
 #include <map>
@@ -162,6 +162,9 @@ private:
 
   bool paramExists(std::string param);
   std::string indentAndInsertSlashes(const std::string &doc);
+
+  void addHtmlTag(std::string &translatedStr, const std::string &tag, const std::map<std::string, std::string> &params);
+  void addCloseHtmlTag(std::string &translatedStr, const std::string &tag);
 
   void addError(int warningType, const std::string &message);
 };

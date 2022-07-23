@@ -387,7 +387,7 @@ void CSDocConverter::handleNewLine(DoxygenEntity &, std::string &translatedComme
   // This way we get to many empty lines in csdoc output, but this
   // is still better than joined lines. Possibility for improvements
   // exists.
-  translatedComment += "<br>\n * ";
+  translatedComment += "<br>\n/// ";
 }
 
 void CSDocConverter::handleTagChar(DoxygenEntity &tag, std::string &translatedComment, std::string &arg) {
@@ -777,6 +777,29 @@ string CSDocConverter::indentAndInsertSlashes(const std::string &doc) {
   }
 
   return translatedStr;
+}
+
+void CSDocConverter::addHtmlTag(std::string &translatedStr, const std::string &tag, const std::map<std::string, std::string> &params)
+{
+    translatedStr += "<";
+    translatedStr += tag;
+    for(const auto &paramPair: params)
+    {
+        translatedStr += " ";
+        translatedStr += paramPair.first;
+        translatedStr += "=\"";
+        translatedStr += paramPair.second;
+        translatedStr += "\"";
+    }
+
+    translatedStr += ">";
+}
+
+void CSDocConverter::addCloseHtmlTag(std::string &translatedStr, const std::string &tag)
+{
+    translatedStr += "</";
+    translatedStr += tag;
+    translatedStr += ">";
 }
 
 String *CSDocConverter::makeDocumentation(Node *node) {
